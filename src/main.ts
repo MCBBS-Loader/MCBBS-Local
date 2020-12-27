@@ -4,7 +4,6 @@ import { MCBBS_LOCAL } from "./manifest";
 import { prompt } from "inquirer";
 import { createHandler } from "./proxy";
 import { getProperty } from "./native";
-import { AddressInfo } from "net";
 const LOGGER = log4js.getLogger("main");
 LOGGER.level = "debug";
 boot();

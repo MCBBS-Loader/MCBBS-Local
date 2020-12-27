@@ -1,5 +1,6 @@
 import express from "express";
-import { genNewToken, isRightHash, lock, setToken, verifyPIN } from "./auth";
+import { genNewToken, isRightHash, setToken, verifyPIN } from "./auth";
+import { isAble, regAll, run } from "./operation";
 import { DeferredRequest } from "./request";
 
 var GRDT = new Map<string, DeferredRequest>();
@@ -12,8 +13,20 @@ function genID(): string {
     return genID();
   }
 }
-function doInvoke(id: string) {}
+function doInvoke(id: string) {
+  var req = GRDT.get(id) as DeferredRequest;
+  if (req != undefined) {
+    if (isAble(req.call || "empty")) {
+      run(req);
+    } else {
+      req.retValue("NOT IMPLEMENTED");
+      req.state = "FAILED";
+      GRDT.set(id, req);
+    }
+  }
+}
 function createHandler(port: number) {
+  regAll();
   var handler = express();
   handler.use(express.json());
   handler.use(express.urlencoded({ extended: true }));
@@ -41,10 +54,6 @@ function createHandler(port: number) {
     }
   });
   handler.post("/verify", (req, res) => {
-    if (lock()) {
-      res.json({ error: "DUPACCESS" }).end();
-      return;
-    }
     if (req.body["pin"] == undefined) {
       res.json({ error: "METAMISSING" }).end();
     } else {
@@ -112,6 +121,48 @@ function createHandler(port: number) {
           state: dreq.state,
         })
         .end();
+    }
+  });
+  handler.post("/get", (req, res) => {
+    var ifclose = false;
+    if (req.body["close"] == true) {
+      ifclose = true;
+    }
+    if (req.body["reqid"] == undefined) {
+      res
+        .json({
+          error: "METAMISSING",
+        })
+        .end();
+      return;
+    }
+    var dreq = GRDT.get(req.body["reqid"]);
+    if (dreq == undefined) {
+      res
+        .json({
+          error: "NOTEXIST",
+        })
+        .end();
+      return;
+    } else {
+      if (["FAILED", "DONE"].includes(dreq.state)) {
+        res
+          .json({
+            error: "SUCCESS",
+            state: dreq.state,
+            data: dreq.res,
+          })
+          .end();
+        if (ifclose) {
+          GRDT.delete(req.body["reqid"]);
+        }
+      } else {
+        res
+          .json({
+            error: "NOTFINISHED",
+          })
+          .end();
+      }
     }
   });
   return handler.listen(port);
