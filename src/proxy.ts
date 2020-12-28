@@ -119,6 +119,7 @@ function createHandler(port: number) {
         .json({
           error: "SUCCESS",
           state: dreq.state,
+          data: dreq.data,
         })
         .end();
     }

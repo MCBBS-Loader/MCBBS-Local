@@ -29,6 +29,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "inquirer": "^7.3.3",
-    "log4js": "^6.3.0"
+    "log4js": "^6.3.0",
+    "wget-improved": "^3.2.1"
   }
 }
