@@ -1,21 +1,19 @@
 import { DeferredRequest } from "./request";
 import file from "./modules/file";
+import task from "./modules/task";
 import { getLogger } from "log4js";
 import info from "./modules/info";
-var FDT = new Map();
-var LOGGER = getLogger("operator");
+let FDT = new Map();
+let LOGGER = getLogger("operator");
 function getAll() {
-  var gn = [];
-  for (var n of FDT.keys()) {
+  let gn = [];
+  for (let n of FDT.keys()) {
     gn.push(n);
   }
   return gn;
 }
 function isAble(callName: string): boolean {
-  if (typeof FDT.get(callName) == "function") {
-    return true;
-  }
-  return false;
+  return typeof FDT.get(callName) == "function";
 }
 function run(req: DeferredRequest) {
   LOGGER.info(`已开始运行 ${req.call} 的操作……`);
@@ -48,6 +46,7 @@ function registryFunc(callName: string, func: (...args: any[]) => any) {
 function regAll() {
   file.reg();
   info.reg();
+  task.reg();
 }
 registryFunc("getAllAPIs", getAll);
 export { isAble, run, registryFunc, regAll };

@@ -1,3 +1,4 @@
+const deleteDir = require("delete-directory-recursive");
 function setProperty(obj, key, val) {
   obj[key] = val;
 }
@@ -12,5 +13,7 @@ function setLockedProperty(a, tag, val) {
     configurable: false,
   });
 }
-
-export { setProperty, getProperty, setLockedProperty };
+function getDeleteDir() {
+  return deleteDir();
+}
+export { setProperty, getProperty, setLockedProperty, getDeleteDir };

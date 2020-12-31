@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from "fs";
 import * as crypto from "crypto";
 import { homedir } from "os";
 import { join } from "path";
+
 const USER_HOME = homedir();
 var pinhash: string;
 function verifyPIN(pin: string): string {
@@ -27,8 +28,7 @@ function savePIN(pin: string): boolean {
 
 function genHash(data: string): string {
   const hash = crypto.createHash("md5");
-  var t = hash.update(data).digest("hex");
-  return t;
+  return hash.update(data).digest("hex");
 }
 function genNewToken() {
   return Math.floor(Math.random() * 1048576 * 1048576 * 1048576).toString(16);
@@ -37,10 +37,7 @@ function setToken(token: string) {
   pinhash = token;
 }
 function isRightHash(hash: string) {
-  if (hash == pinhash) {
-    return true;
-  }
-  return false;
+  return hash == pinhash;
 }
 var locked: boolean = false;
 function lock() {
