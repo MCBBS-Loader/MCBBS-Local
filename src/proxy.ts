@@ -2,6 +2,7 @@ import express from "express";
 import { genNewToken, isRightHash, setToken, verifyPIN } from "./auth";
 import { isAble, regAll, run } from "./operation";
 import { DeferredRequest } from "./request";
+import { MCBBS_LOCAL } from "./manifest";
 
 var GRDT = new Map<string, DeferredRequest>();
 
@@ -38,7 +39,7 @@ function createHandler(port: number) {
     if (req.method.toLocaleLowerCase() == "options") {
       res.status(200).end();
     } else {
-      if (req.path == "/verify") {
+      if (req.path == "/verify" || req.path == "/version") {
         next();
         return;
       }
@@ -52,6 +53,9 @@ function createHandler(port: number) {
         }
       }
     }
+  });
+  handler.post("/version", (req, res) => {
+    res.json({ version: MCBBS_LOCAL.VERSION }).end();
   });
   handler.post("/verify", (req, res) => {
     if (req.body["pin"] == undefined) {
