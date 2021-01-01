@@ -4,7 +4,7 @@ import { homedir } from "os";
 import { join } from "path";
 
 const USER_HOME = homedir();
-var pinhash: string;
+var pinhash: string[] = [];
 function verifyPIN(pin: string): string {
   try {
     var data = readFileSync(join(USER_HOME, "mcbbs.local.hash"));
@@ -34,10 +34,10 @@ function genNewToken() {
   return Math.floor(Math.random() * 1048576 * 1048576 * 1048576).toString(16);
 }
 function setToken(token: string) {
-  pinhash = token;
+  pinhash.push(token);
 }
 function isRightHash(hash: string) {
-  return hash == pinhash;
+  return pinhash.includes(hash);
 }
 var locked: boolean = false;
 function lock() {
